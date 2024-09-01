@@ -1,5 +1,4 @@
 from django.db import models
-import datetime
 
 class Rooms(models.Model):
     roomID = models.AutoField(primary_key=True)
@@ -16,8 +15,7 @@ class seatMng(models.Model):
     seatID = models.AutoField(primary_key=True)
     priceRate = models.FloatField()
     active = models.BooleanField(default=True)
-    seatNumber = models.IntegerField(null=True)
-    dateJoined = models.DateTimeField(default=datetime.datetime.now())
+    seatNumber = models.IntegerField(unique=True)
     roomID = models.ForeignKey(Rooms, on_delete=models.CASCADE, related_name='seatRoom')
 
     def __str__(self):
