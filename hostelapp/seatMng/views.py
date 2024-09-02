@@ -11,7 +11,8 @@ class SeatMngCreateAPIView(APIView):
         if serializer.is_valid():
             # creates the room objects directly as seatSerializer instances the roomID with Rooms model as it is used as foreign key,
             # and same instance of Room is return along with roomID 
-            room = serializer.validated_data['roomID'] 
+            room = serializer.validated_data['roomID']
+            # this will increase the occupancy count by +1 for the room assigned
             if room.occupancy <= room.totalSeats:
                 room.occupancy += 1
                 room.save()

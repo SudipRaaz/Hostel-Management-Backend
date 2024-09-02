@@ -11,3 +11,22 @@ urlpatterns = [
 	# path('logout', views.UserLogout.as_view(), name='logout'),
 	# path('user', views.UserView.as_view(), name='user'),
 ]
+
+# register user with seat
+# {
+#     "seat": {
+#         "priceRate": 1500.00,
+#         "active": true,
+#         "seatNumber": 101,
+#         "roomID": 1
+#     },
+#     "user": {
+#         "name": "John Doe",
+#         "email": "user@example.com",
+#         "password": "securepassword",
+#         "gender": "Male",
+#         "phone_number": "1234567890",
+#         "address": "123 Street Name",
+#         "date_of_birth": "2000-01-01"
+#     }
+# }

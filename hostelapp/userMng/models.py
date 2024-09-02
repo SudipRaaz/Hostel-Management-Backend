@@ -24,18 +24,21 @@ class CustomUserManager(BaseUserManager):
     
 
 class User(AbstractUser):
-	email = models.EmailField(max_length=255, unique=True)
-	password = models.CharField(max_length=255)
-	gender = models.CharField(max_length=255,  null=True)
-	phone_number = models.CharField(max_length=255, null=True)
-	address = models.CharField(max_length=255, null=True)
-	date_of_birth = models.DateField(null=True)
-	admissionDate = models.DateField(default=datetime.datetime.now)
-	seatID = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatNum')
-	username = None
-	USERNAME_FIELD = 'email'
-	REQUIRED_FIELDS = []
-	objects = CustomUserManager()
+    name = models.CharField(max_length=50)
+    first_name = None
+    last_name = None
+    email = models.EmailField(max_length=255, unique=True)
+    password = models.CharField(max_length=255)
+    gender = models.CharField(max_length=255,  null=True)
+    phone_number = models.CharField(max_length=255, null=True)
+    address = models.CharField(max_length=255, null=True)
+    date_of_birth = models.DateField(null=True)
+    admissionDate = models.DateField(default=datetime.date.today)
+    seatID = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatNum')
+    username = None
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
 
 
 

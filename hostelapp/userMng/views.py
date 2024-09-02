@@ -3,18 +3,43 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status
 import jwt, datetime, pytz
+
+from seatMng.serializers import SeatSerializer
 from .models import User
 from .serializers import UserSerializer
 
 class RegisterViews(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = UserSerializer(data = request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            # The line `return Response(serializer.data, status=status.HTTP_201_CREATED)` in the
-            # `post` method of the `RegisterViews` class is returning a response to the client after
-            # successfully creating a new user.
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # First, create the seat
+        seat_serializer = SeatSerializer(data=request.data.get('seat'))
+        if seat_serializer.is_valid():
+            seat = seat_serializer.save()
+            
+            # Then, create the user using the newly created seatID
+            user_data = request.data.get('user')
+            user_data['seatID'] = seat.seatID
+            user_serializer = UserSerializer(data=user_data)
+            
+            if user_serializer.is_valid():
+                user = user_serializer.save()
+                print("log: ", user_serializer.data)
+                return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(seat_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def get(self, request, *args, **kwargs):
+        email = kwargs.pop('email', None)
+        if email is None:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.filter(email=email).first()
+        if user is None:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    
         
 class LoginViews(APIView):
     def post(self, request, *args, **kwargs):

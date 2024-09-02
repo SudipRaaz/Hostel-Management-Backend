@@ -1,10 +1,11 @@
 import datetime
 from django.db import models
+from userMng.models import User
 
 # Create your models here.
 class CategoryList(models.Model):
     categoryID = models.AutoField(primary_key=True)
-    category = models.CharField(max_length=50)
+    category = models.CharField(max_length=50) # category title
     active = models.BooleanField(default=True)
     type = models.CharField(max_length=20)
 
@@ -25,10 +26,14 @@ class Expense(models.Model):
 
 class Income(models.Model):
     incomeID = models.AutoField(primary_key=True)
+    date = models.DateField(default=datetime.date.today)
     incomeCategory = models.CharField(max_length=50)
+    description = models.TextField(max_length=100, null=True)
     amount = models.FloatField(max_length=10)
     discount = models.FloatField(max_length=10)
     total = models.FloatField(max_length=10)
+    addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
+    paidBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paidBy")
 
 class Vendors(models.Model):
     name = models.CharField(max_length=50)
