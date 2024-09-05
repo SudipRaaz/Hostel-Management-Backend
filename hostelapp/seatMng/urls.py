@@ -13,11 +13,11 @@ urlpatterns = [
 
 # payload parameters for seats creation
 # {
-#   "seatID": 1,
-#   "priceRate": 100.00,
-#   "active": true, 
-#   "seatNumber": 1,
-#   "roomID": 1
+#     "seat": {
+#         "priceRate": 1500.00,
+#         "active": true,
+#         "seatNumber": 101  # Assuming seatNumber 101 exists
+#     }
 # }
 
 # payload parameters for create-rooms

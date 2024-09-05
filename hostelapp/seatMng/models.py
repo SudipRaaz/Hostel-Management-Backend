@@ -11,12 +11,16 @@ class Rooms(models.Model):
     def __str__(self):
         return f"{self.roomName} (Room {self.roomNumber})"
 
+    
+class seatNumber(models.Model):
+    seatNumber = models.IntegerField(primary_key=True)
+    roomNumber = models.ForeignKey(Rooms, on_delete=models.CASCADE, related_name='seatRoomNumber')
+    
 class seatMng(models.Model):
     seatID = models.AutoField(primary_key=True)
     priceRate = models.FloatField()
     active = models.BooleanField(default=True)
-    seatNumber = models.IntegerField(unique=True)
-    roomID = models.ForeignKey(Rooms, on_delete=models.CASCADE, related_name='seatRoom')
+    seatNumber = models.ForeignKey(seatNumber, on_delete=models.DO_NOTHING, related_name="seat_number")
 
     def __str__(self):
         return f"Seat {self.seatID} in {self.roomID.roomName}"

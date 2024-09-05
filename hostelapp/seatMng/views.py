@@ -1,27 +1,44 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
-from .models import seatMng, Rooms
+from .models import seatMng, Rooms, seatNumber
 from django.db import models 
-from .serializers import SeatSerializer, RoomSerializer
+from .serializers import SeatSerializer, RoomSerializer, SeatNumberSerializer
 
 class SeatMngCreateAPIView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = SeatSerializer(data=request.data)
-        if serializer.is_valid():
-            # creates the room objects directly as seatSerializer instances the roomID with Rooms model as it is used as foreign key,
-            # and same instance of Room is return along with roomID 
-            room = serializer.validated_data['roomID']
-            # this will increase the occupancy count by +1 for the room assigned
-            if room.occupancy <= room.totalSeats:
-                room.occupancy += 1
-                room.save()
-                serializer.save()
+        # Extract seatMng data from request
+        seat_mng_data = request.data.get('seat')
+        seat_number_value = seat_mng_data.get('seatNumber')  # SeatNumber value from request
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response({'error': 'Room is full'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Check if seatNumber exists in the seatNumber table
+        try:
+            seat_number_instance = seatNumber.objects.get(seatNumber=seat_number_value)
+        except seatNumber.DoesNotExist:
+            return Response({'error': 'seatNumber does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Retrieve the relevant roomID using seatNumber
+        room_instance = seat_number_instance.roomNumber  # This gives us the relevant Rooms instance
+
+        # Increment the occupancy in the Rooms model
+        if room_instance.occupancy < room_instance.totalSeats:
+            room_instance.occupancy += 1
+            room_instance.save()
+        else:
+            return Response({'error': 'Room occupancy is full'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new seatMng entry
+        seat_mng_data['seatNumber'] = seat_number_instance.pk  # Add seatNumber foreign key
+        seat_serializer = SeatSerializer(data=seat_mng_data)
+
+        if seat_serializer.is_valid():
+            seat_serializer.save()  # Save the seatMng instance
+            return Response({
+                'seatMng': seat_serializer.data,
+                'room': RoomSerializer(room_instance).data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(seat_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class SeatMngListInactiveAPIView(APIView):
