@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import CategoryList, Income, Expense
+
+from seatMng.models import seatMng
+from .models import CategoryList, IncomingPayments, BilledPayment, Expense
 
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,9 +10,25 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
 class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Income
+        model = IncomingPayments
         fields = '__all__'  # Alternatively, specify fields explicitly like ['incomeID', 'incomeTitle', 'amount', 'categoryID', 'date']
+        
 
+class BilledPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BilledPayment
+        fields = ['seatID_finance', 'billedAmount', 'discountAmount', 'billedMonth', 'billDescription']
+
+    def validate(self, data):
+        # Check if billedAmount is missing and apply a default (based on seatMng priceRate if needed)
+        if 'billedAmount' not in data or data['billedAmount'] is None:
+            seat = data.get('seatID_finance')
+            if seat and seat.priceRate:
+                data['billedAmount'] = seat.priceRate
+            else:
+                raise serializers.ValidationError("billedAmount or seat priceRate is required.")
+        
+        return data
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense

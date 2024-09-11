@@ -1,5 +1,7 @@
 from django.db import models
 
+from userMng.models import User
+
 class Rooms(models.Model):
     roomID = models.AutoField(primary_key=True)
     roomName = models.CharField(max_length=100, null=True)
@@ -21,6 +23,5 @@ class seatMng(models.Model):
     priceRate = models.FloatField()
     active = models.BooleanField(default=True)
     seatNumber = models.ForeignKey(seatNumber, on_delete=models.DO_NOTHING, related_name="seat_number")
+    userID = models.ForeignKey(User, on_delete=models.PROTECT, related_name="assigned_to_user")
 
-    def __str__(self):
-        return f"Seat {self.seatID} in {self.roomID.roomName}"

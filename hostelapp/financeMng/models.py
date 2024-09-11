@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from seatMng.models import seatMng
 from userMng.models import User
 
 # Create your models here.
@@ -24,16 +25,32 @@ class Expense(models.Model):
         return self.expenseTitle
 
 
-class Income(models.Model):
-    incomeID = models.AutoField(primary_key=True)
+class IncomingPayments(models.Model):
+    ipaymentID = models.AutoField(primary_key=True)
     date = models.DateField(default=datetime.date.today)
     incomeCategory = models.CharField(max_length=50)
     description = models.TextField(max_length=100, null=True)
-    amount = models.FloatField(max_length=10)
-    discount = models.FloatField(max_length=10)
-    total = models.FloatField(max_length=10)
-    addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
+    paidAmount = models.FloatField(max_length=10, default=0)
+    discountAmount = models.FloatField(max_length=10, default=0)
+    dueAmount = models.FloatField(max_length=10, default=0)
+    # paidUsing = models.CharField(max_length=20, null=True)
+    # addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
     paidBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paidBy")
+
+class BilledPayment(models.Model):
+    paymentStatus = [('Unpaid', 'Unpaid'),('Partial', 'Partial'),('Paid', 'Paid'),]
+    billID = models.AutoField(primary_key=True)
+    seatID_finance = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Num')
+    billedAmount = models.FloatField(default=0)
+    billedDate = models.DateField(default=datetime.datetime.now)
+    status = models.CharField(max_length=20, choices=paymentStatus, default='Unpaid')
+    billedMonth = models.CharField(max_length=50)
+    billDescription = models.TextField(max_length=150, null=True)
+    discountAmount = models.FloatField(null=True)
+    
+
+
+
 
 class Vendors(models.Model):
     name = models.CharField(max_length=50)
