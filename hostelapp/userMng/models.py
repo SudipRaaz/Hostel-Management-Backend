@@ -3,6 +3,8 @@ import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from seatMng.models import seatMng
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -33,6 +35,7 @@ class User(AbstractUser):
     address = models.CharField(max_length=255, null=True)
     date_of_birth = models.DateField(null=True)
     admissionDate = models.DateField(default=datetime.date.today)
+    seatID = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Number')
     username = None
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

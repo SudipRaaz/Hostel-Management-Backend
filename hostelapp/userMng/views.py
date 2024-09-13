@@ -26,7 +26,7 @@ class RegisterViews(APIView):
             return Response({"error": seat_response.data}, status=seat_response.status_code)
         else:
             # Add the seatID to the user data
-            user_data['seatID'] = seat_response.data['seatID']
+            user_data['seatID'] = seat_response.data['seatID'] # type: ignore
 
             # Create the user record
             if user_serializer.is_valid():
@@ -122,7 +122,7 @@ class LoginViews(APIView):
         expiry_time_nepal = current_time_nepal + datetime.timedelta(minutes=60)
         
         payload = {
-            "id": user.id,
+            "id": user.id, # type: ignore
             "email": user.email,
             "exp": expiry_time_nepal.timestamp(),
             "iat": current_time_nepal.timestamp()
