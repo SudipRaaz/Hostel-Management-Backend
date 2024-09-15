@@ -6,7 +6,7 @@ from rest_framework import status, generics
 import jwt, datetime, pytz
 
 from seatMng.views import SeatMngCreateAPIView
-from seatMng.serializers import SeatSerializer
+from seatMng.serializers import SeatMngSerializer
 from .models import User
 from .serializers import UserSerializer
 
@@ -22,11 +22,11 @@ class RegisterViews(APIView):
         # Validate and create the seat record first
         seat_creation = SeatMngCreateAPIView()
         seat_response = seat_creation.post(request)
-        if seat_response.status_code != status.HTTP_201_CREATED or not user_serializer.is_valid():
-            return Response({"error": seat_response.data}, status=seat_response.status_code)
+        if seat_response.status_code != status.HTTP_201_CREATED:
+            return Response({"error": 'only seat created{seat_response.context_data}'}, status=status.HTTP_206_PARTIAL_CONTENT)
         else:
             # Add the seatID to the user data
-            user_data['seatID'] = seat_response.data['seatID'] # type: ignore
+            user_data['seatID'] = seat_response.data.get('seatMng', {}).get('seatID')   # type: ignore
 
             # Create the user record
             if user_serializer.is_valid():
@@ -54,7 +54,7 @@ class RegisterViews(APIView):
         user_data = UserSerializer(user).data
         
         # Serialize the related seat data
-        seat_data = SeatSerializer(user.seatID).data
+        seat_data = SeatMngSerializer(user.seatID).data
         
         # Combine the user and seat data into a single response
         combined_data = {
@@ -85,7 +85,7 @@ class RegisterViews(APIView):
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         # Serialize the seat data
-        seat_serializer = SeatSerializer(seat, data=seat_data, partial=True)
+        seat_serializer = SeatMngSerializer(seat, data=seat_data, partial=True)
         if seat_serializer.is_valid():
             seat_serializer.save()
         else:

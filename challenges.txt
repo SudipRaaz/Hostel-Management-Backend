@@ -1,0 +1,8 @@
+1.  While trying to develop backend without scope discussion, I am facing i a lot of problems to adapt to the new requirement feature.
+    For which every once a while, i have to change the whole backend architecture. 
+    Overall a lot of change requirement are emerging.
+
+    Solution: Scope discussion is necessary.  
+
+    Instances: 
+    SeatMng table: accommodating UserID instead of being seatID in user table. Such, users could be easily assigned to seats from Room Management. 

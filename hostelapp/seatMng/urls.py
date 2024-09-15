@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('seats', views.SeatMngCreateAPIView.as_view(), name="create for new hosteler" ),
+    path('create-seat', views.SeatMngCreateAPIView.as_view(), name="create for new hosteler" ),
     path('seats-available', views.SeatMngListInactiveAPIView.as_view(), name="create for new hosteler" ),
     # This line of code is defining a URL pattern using Django's path() function. When a user
     # navigates to the URL "create-rooms" in the application, Django will call the `as_view()` method

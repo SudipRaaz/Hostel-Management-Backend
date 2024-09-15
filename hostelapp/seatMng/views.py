@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from .models import seatMng, Rooms, seatNumber
 from django.db import models 
-from .serializers import SeatSerializer, RoomSerializer, SeatNumberSerializer
+from .serializers import SeatMngSerializer, RoomSerializer, SeatNumberSerializer
 
 class SeatMngCreateAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -29,7 +29,8 @@ class SeatMngCreateAPIView(APIView):
 
         # Create a new seatMng entry
         seat_mng_data['seatNumber'] = seat_number_instance.pk  # Add seatNumber foreign key
-        seat_serializer = SeatSerializer(data=seat_mng_data)
+        seat_mng_data['RoomNumber'] =  room_instance.roomNumber
+        seat_serializer = SeatMngSerializer(data=seat_mng_data)
 
         if seat_serializer.is_valid():
             seat_serializer.save()  # Save the seatMng instance
@@ -57,7 +58,6 @@ class SeatMngListInactiveAPIView(APIView):
             'occupied_seats': total_occupancy,
             'available_seats': available_seats
         }
-
         return Response(data)
     
 class CreateRoom(generics.CreateAPIView):
