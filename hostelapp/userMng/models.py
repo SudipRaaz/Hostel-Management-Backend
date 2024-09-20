@@ -30,10 +30,10 @@ class User(AbstractUser):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    gender = models.CharField(max_length=255,  null=True)
-    phone_number = models.CharField(max_length=255, null=True)
+    gender = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=255)
     address = models.CharField(max_length=255, null=True)
-    date_of_birth = models.DateField(null=True)
+    date_of_birth = models.DateField()
     admissionDate = models.DateField(default=datetime.date.today)
     seatID = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Number')
     username = None

@@ -10,7 +10,7 @@ urlpatterns = [
     path('userview/', views.UserView.as_view(), name="user view - get user details from JWT token"),
     path('user/<str:email>/', views.RegisterViews.as_view(), name='get user details with email search '),
     # get all users
-    path('users/', views.UserListView.as_view(), name='get user details with email search '),
+    path('user/', views.UserListView.as_view(), name='get user details with email search '),
     # user logout
     path('logout/', views.logout.as_view(), name="user logout"),
 ]

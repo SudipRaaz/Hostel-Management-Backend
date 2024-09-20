@@ -5,6 +5,7 @@ from .models import seatMng, Rooms, seatNumber
 from django.db import models 
 from .serializers import SeatMngSerializer, RoomSerializer, SeatNumberSerializer
 
+# create seat with their respective room ID
 class SeatMngCreateAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Extract seatMng data from request
@@ -41,6 +42,22 @@ class SeatMngCreateAPIView(APIView):
         else:
             return Response(seat_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class UnoccupiedSeatsAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get all unoccupied seats
+        rooms = Rooms.objects.all()
+        
+        room_seats = []
+        
+        for room in rooms:
+            unoccupiedSeat = seatNumber.objects.filter(roomNumber = room.roomID, occupiedStatus = False) # type: ignore
+            seatSerializer = SeatNumberSerializer(unoccupiedSeat, many= True)
+            room_seats.append({
+                'roomID': room.roomID,
+                'unoccupiedSeat': seatSerializer.data}
+            )
+        # Return the RoomID and list of unoccupied seatID
+        return Response(room_seats, status=status.HTTP_200_OK)
 
 class SeatMngListInactiveAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -60,7 +77,42 @@ class SeatMngListInactiveAPIView(APIView):
         }
         return Response(data)
     
-class CreateRoom(generics.CreateAPIView):
-    queryset = Rooms.objects.all()
-    serializer_class = RoomSerializer
+class RoomManagement(APIView):
+    # Create a room
+    def post(self, request, *args, **kwargs):
+        serializer = RoomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Get all rooms
+    def get(self, request, *args, **kwargs):
+        rooms = Rooms.objects.all()
+        serializer = RoomSerializer(rooms, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # Update a room
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            room = Rooms.objects.get(pk=pk)
+        except Rooms.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = RoomSerializer(room, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete a room
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            room = Rooms.objects.get(pk=pk)
+        except Rooms.DoesNotExist:
+            return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        room.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

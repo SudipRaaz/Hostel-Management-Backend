@@ -9,7 +9,7 @@ class SeatMngSerializer(serializers.ModelSerializer):
 class SeatNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = seatNumber
-        fields = ('seatNumber','roomID','seatPriceRate', 'occupiedStatus' )
+        fields = ('seatNumber','roomNumber','seatPriceRate', 'occupiedStatus' )
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
