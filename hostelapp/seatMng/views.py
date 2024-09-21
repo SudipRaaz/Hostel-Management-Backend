@@ -88,7 +88,11 @@ class RoomManagement(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Get all rooms
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pk, **kwargs):
+        if pk is not None:
+            seatNumberObject = seatNumber.objects.filter(roomNumber=pk )
+            serializer = SeatNumberSerializer(seatNumberObject, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         rooms = Rooms.objects.all()
         serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
