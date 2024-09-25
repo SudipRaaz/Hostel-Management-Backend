@@ -95,7 +95,8 @@ class RoomManagement(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         rooms = Rooms.objects.all()
         serializer = RoomSerializer(rooms, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)  
+    
 
     # Update a room
     def put(self, request, pk, *args, **kwargs):
