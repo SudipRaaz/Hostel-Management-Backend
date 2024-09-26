@@ -104,7 +104,7 @@ class RoomManagement(APIView):
             room = Rooms.objects.get(pk=pk)
         except Rooms.DoesNotExist:
             return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
-
+        # room serializer
         serializer = RoomSerializer(room, data=request.data)
         if serializer.is_valid():
             serializer.save()
