@@ -14,7 +14,7 @@ class Rooms(models.Model):
         return f"{self.roomName} (Room {self.roomNumber})"
     
 class seatNumber(models.Model):
-    seatNumber = models.IntegerField(primary_key=True)
+    seatNumber = models.AutoField(primary_key=True)
     roomNumber = models.ForeignKey(Rooms, on_delete=models.CASCADE, related_name='seatRoomNumber')
     seatPriceRate = models.FloatField(default=0.0)
     occupiedStatus = models.BooleanField(default=False)

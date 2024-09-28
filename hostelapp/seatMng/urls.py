@@ -3,7 +3,7 @@ from .views import *
 
 urlpatterns = [
     
-    path('create-seat', SeatMngCreateAPIView.as_view(), name="create for new hosteler" ),
+    path('create-seat', SeatManagement.as_view(), name="create for new hosteler" ),
     
     # room management
     path('room', RoomManagement.as_view(), name="Room Management"),

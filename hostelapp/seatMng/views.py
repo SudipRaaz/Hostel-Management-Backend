@@ -1,12 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
+from rest_framework.generics import ListAPIView
 from .models import seatMng, Rooms, seatNumber
 from django.db import models 
 from .serializers import SeatMngSerializer, RoomSerializer, SeatNumberSerializer
 
 # create seat with their respective room ID
-class SeatMngCreateAPIView(APIView):
+class AllocateSeatToUser(APIView):
     def post(self, request, *args, **kwargs):
         # Extract seatMng data from request
         seat_mng_data = request.data.get('seat')
@@ -42,6 +43,21 @@ class SeatMngCreateAPIView(APIView):
         else:
             return Response(seat_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
+class SeatManagement(APIView):
+    def get(self, request, *args, **kwargs):
+        seatNumber_object = seatNumber.objects.all()
+
+        available_seats = []
+        unoccupied_seat = seatNumber_object.filter(occupiedStatus = False)
+
+        serializer = SeatNumberSerializer(data = unoccupied_seat, many= True)
+        
+        if serializer.is_valid():
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        return Response(serializer.data,status = status.HTTP_400_BAD_REQUEST)
+                # Your code logic here
+
 class UnoccupiedSeatsAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Get all unoccupied seats
@@ -76,7 +92,8 @@ class SeatMngListInactiveAPIView(APIView):
             'available_seats': available_seats
         }
         return Response(data)
-    
+
+# room management
 class RoomManagement(APIView):
     # Create a room
     def post(self, request, *args, **kwargs):
@@ -88,14 +105,23 @@ class RoomManagement(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Get all rooms
-    def get(self, request, pk, **kwargs):
+    def get(self, request, pk=None, *args, **kwargs):
+        # If `pk` is provided, return seats for the specific room
         if pk is not None:
-            seatNumberObject = seatNumber.objects.filter(roomNumber=pk )
-            serializer = SeatNumberSerializer(seatNumberObject, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                seat_number_objects = seatNumber.objects.filter(roomNumber=pk)
+                if not seat_number_objects.exists():
+                    return Response({'error': 'No seats found for the provided room.'}, status=status.HTTP_404_NOT_FOUND)
+                
+                serializer = SeatNumberSerializer(seat_number_objects, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Rooms.DoesNotExist:
+                return Response({'error': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Otherwise, return all rooms
         rooms = Rooms.objects.all()
         serializer = RoomSerializer(rooms, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)  
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 
     # Update a room

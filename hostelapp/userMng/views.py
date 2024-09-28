@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import status, generics
 import jwt, datetime, pytz
 
-from seatMng.views import SeatMngCreateAPIView
+from seatMng.views import AllocateSeatToUser
 from seatMng.serializers import SeatMngSerializer
 from .models import User
 from .serializers import UserSerializer
@@ -20,7 +20,7 @@ class RegisterViews(APIView):
         user_serializer = UserSerializer(data=user_data)
 
         # Validate and create the seat record first
-        seat_creation = SeatMngCreateAPIView()
+        seat_creation = AllocateSeatToUser()
         seat_response = seat_creation.post(request)
         if seat_response.status_code != status.HTTP_201_CREATED:
             return Response({"error": 'only seat created{seat_response.context_data}'}, status=status.HTTP_206_PARTIAL_CONTENT)
