@@ -3,12 +3,13 @@ from .views import *
 
 urlpatterns = [
     
-    path('create-seat', SeatManagement.as_view(), name="create for new hosteler" ),
+    path('seat', SeatManagement.as_view(), name="create for new hosteler" ),
+    path('seat/<int:seatID>', SeatManagement.as_view(), name="create for new hosteler" ),
     
     # room management
     path('room', RoomManagement.as_view(), name="Room Management"),
     path('room/<int:pk>', RoomManagement.as_view(), name="Room Management"),
-    
+     
     # dashboard management
     path('seats-available', SeatMngListInactiveAPIView.as_view(), name="create for new hosteler" ),
     path('unoccupied-seats/', UnoccupiedSeatsAPIView.as_view(), name='unoccupied_seats'),

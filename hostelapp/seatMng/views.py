@@ -46,17 +46,46 @@ class AllocateSeatToUser(APIView):
     
 class SeatManagement(APIView):
     def get(self, request, *args, **kwargs):
-        seatNumber_object = seatNumber.objects.all()
+        unoccupied_seat = seatNumber.objects.filter(occupiedStatus = False)
+        serializer = SeatNumberSerializer(unoccupied_seat, many= True)
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
-        available_seats = []
-        unoccupied_seat = seatNumber_object.filter(occupiedStatus = False)
+    def post(self, request, *args, **kwargs):
+        serializer = SeatNumberSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, seatID, **kwargs):
+        try:
+            # Fetch the seatNumber using seatID
+            seat_instance = seatNumber.objects.get(seatNumber=seatID)
+        except seatNumber.DoesNotExist:
+            # Return an error message if seatID is not found
+            return Response({"error": "Seat not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Catch other exceptions and return a string representation of the error
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = SeatNumberSerializer(data = unoccupied_seat, many= True)
+        # Serialize the seat data
+        serializer = SeatNumberSerializer(seat_instance, data=request.data)
         
         if serializer.is_valid():
-            return Response(serializer.data, status = status.HTTP_200_OK)
-        return Response(serializer.data,status = status.HTTP_400_BAD_REQUEST)
-                # Your code logic here
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, seatID, **kwargs):
+        try:
+            seatID = seatNumber.objects.get(seatNumber=seatID)
+        except Exception as e:
+            return Response({"error": e}, status=status.HTTP_404_NOT_FOUND)
+        seatID.delete()
+        return Response(status=status.HTTP_200_OK)
+        
 
 class UnoccupiedSeatsAPIView(APIView):
     def get(self, request, *args, **kwargs):
