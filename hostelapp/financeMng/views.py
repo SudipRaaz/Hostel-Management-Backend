@@ -28,7 +28,7 @@ class GenerateBillView(APIView):
 
             # Ensure seatID and other required fields exist
             if seat_id is None or billed_month is None:
-                return Response({"error": "Required fields are missing"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Required fields are missing (billed month or seatID)"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Fetch seatMng object to get the priceRate if billedAmount not provided
             try:
@@ -61,6 +61,22 @@ class GenerateBillView(APIView):
 
         # Return errors if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, billID, **kwargs):
+        billDetails = BilledPayment.objects.filter(billID=billID).first()
+        
+        if billDetails is None:
+            return Response({"error": "Bill not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = BilledPaymentSerializer(billDetails)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, billID, **kwargs):
+        bill = BilledPayment.objects.get(billID=billID)
+        if bill is not None:
+            bill.delete()
+            return Response({"success": "Bill Deleted Successfully"}, status=status.HTTP_200_OK)
+        return Response({"error": "Bill not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 

@@ -17,7 +17,8 @@ class IncomeSerializer(serializers.ModelSerializer):
 class BilledPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = BilledPayment
-        fields = ['seatID_finance', 'billedAmount', 'discountAmount', 'billedMonth', 'billDescription']
+        # fields = ['seatID_finance', 'billedAmount', 'discountAmount', 'billedMonth', 'billDescription']
+        fields = '__all__'
 
     def validate(self, data):
         # Check if billedAmount is missing and apply a default (based on seatMng priceRate if needed)
