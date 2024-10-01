@@ -69,7 +69,7 @@ class SeatManagement(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         # Serialize the seat data
-        serializer = SeatNumberSerializer(seat_instance, data=request.data)
+        serializer = SeatNumberSerializer(seat_instance, data=request.data, partial=True)
         
         if serializer.is_valid():
             serializer.save()
@@ -104,6 +104,7 @@ class UnoccupiedSeatsAPIView(APIView):
         # Return the RoomID and list of unoccupied seatID
         return Response(room_seats, status=status.HTTP_200_OK)
 
+# Dashboard API methods
 class SeatMngListInactiveAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Calculate total seats across all rooms
