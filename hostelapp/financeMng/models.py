@@ -37,9 +37,10 @@ class IncomingPayments(models.Model):
     # addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
     paidBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paidBy")
 
-class BilledPayment(models.Model):
+class BillGenerate(models.Model):
     paymentStatus = [('Unpaid', 'Unpaid'),('Partial', 'Partial'),('Paid', 'Paid'),]
     billID = models.AutoField(primary_key=True)
+    userID = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_bill")
     seatID_finance = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Num')
     billedAmount = models.FloatField(default=0)
     billedDate = models.DateField(default=datetime.datetime.now)

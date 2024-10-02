@@ -2,8 +2,10 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from seatMng.models import seatMng
-from .models import CategoryList, IncomingPayments,BilledPayment, Expense
-from .serializers import CategoryListSerializer, IncomeSerializer, BilledPaymentSerializer, ExpenseSerializer
+from userMng.models import User
+from userMng.serializers import UserSerializer
+from .models import CategoryList, IncomingPayments,BillGenerate, Expense
+from .serializers import CategoryListSerializer, IncomeSerializer, BillGenerateSerializer, ExpenseSerializer
 
 class CategoryListView(generics.ListAPIView):
     queryset = CategoryList.objects.all()
@@ -16,7 +18,7 @@ class IncomeCreateView(generics.CreateAPIView):
 class GenerateBillView(APIView):
     def post(self, request):
         # Initialize the serializer with the request data
-        serializer = BilledPaymentSerializer(data=request.data)
+        serializer = BillGenerateSerializer(data=request.data)
 
         # Ensure validation is performed before accessing validated_data
         if serializer.is_valid():
@@ -32,47 +34,60 @@ class GenerateBillView(APIView):
 
             # Fetch seatMng object to get the priceRate if billedAmount not provided
             try:
-                seat = seatMng.objects.get(seatID=seat_id.seatID)
+                seatNumberInstance = seatMng.objects.get(seatID=seat_id.seatID)
             except seatMng.DoesNotExist:
                 return Response({"error": "Seat not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+            try:
+                userID_data = User.objects.filter(seatID = seatNumberInstance).first()
+                print("user object : %s  " %userID_data)
+            except User.DoesNotExist:
+                return Response({f"error": "User not found {userID_data}"}, status=status.HTTP_202_ACCEPTED)
 
             # Use provided billedAmount, or fall back to seatMng's priceRate
-            billed_amount = serializer.validated_data.get('billedAmount', seat.priceRate)  # type: ignore
+            billed_amount = serializer.validated_data.get('billedAmount', seatNumberInstance.priceRate)  # type: ignore
 
             # Calculate total billed amount by subtracting any discount
             total_billed_amount = billed_amount - discount
 
             # Create the bill record by passing the seat ID, not the entire object
-            new_bill = BilledPayment.objects.create(
-                seatID_finance=seat,  # Use seatID instead of the entire seat object
+            new_bill = BillGenerate.objects.create(
+                seatID_finance=seatNumberInstance,  # Use seatID instead of the entire seat object
                 billedAmount=total_billed_amount,
                 billedMonth=billed_month,
                 billDescription=description,
-                discountAmount=discount
+                discountAmount=discount,
+                userID=userID_data
             )
+            
+            # Serialize user data and retrieve the email and userID
+            user_serialized = UserSerializer(userID_data).data
+            user_id = user_serialized.get('id')  # type: ignore
+            user_email = user_serialized.get('email')   # type: ignore
 
             return Response({
                 "message": "Bill generated successfully",
                 "bill_id": new_bill.billID,
                 "billed_amount": total_billed_amount,
                 "status": new_bill.status,
-                "billed_month": new_bill.billedMonth
+                "billed_month": new_bill.billedMonth,
+                "UserEmail": user_email
             }, status=status.HTTP_201_CREATED)
 
         # Return errors if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, billID, **kwargs):
-        billDetails = BilledPayment.objects.filter(billID=billID).first()
+        billDetails = BillGenerate.objects.filter(billID=billID).first()
         
         if billDetails is None:
             return Response({"error": "Bill not found"}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = BilledPaymentSerializer(billDetails)
+        serializer = BillGenerateSerializer(billDetails)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def delete(self, request, billID, **kwargs):
-        bill = BilledPayment.objects.get(billID=billID)
+        bill = BillGenerate.objects.get(billID=billID)
         if bill is not None:
             bill.delete()
             return Response({"success": "Bill Deleted Successfully"}, status=status.HTTP_200_OK)
