@@ -10,6 +10,12 @@ from seatMng.serializers import SeatMngSerializer
 from .models import User
 from .serializers import UserSerializer
 
+# userMng/views.py
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'homePage/index.html')
+
 
 class RegisterViews(APIView):
     # register users and create seat

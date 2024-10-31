@@ -17,7 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from userMng import views
+
 urlpatterns = [
+    # for templates file rendering
+    path('', views.index, name='homepage'), 
     path('admin/', admin.site.urls),
     path('auth/', include('django.contrib.auth.urls')),
     path('userMng/', include('userMng.urls')), 
