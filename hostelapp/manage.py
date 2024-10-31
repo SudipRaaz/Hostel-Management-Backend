@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from hostelapp.wsgi import app
 
 def main():
     """Run administrative tasks."""
