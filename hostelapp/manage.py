@@ -17,7 +17,9 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+# Update your manage.py to add this at the bottom:
+if __name__ == "__main__":
     main()
-
-from hostelapp.wsgi import app
+else:
+    from hostelapp.wsgi import application
+    app = application

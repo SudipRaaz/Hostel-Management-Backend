@@ -1,6 +1,9 @@
 echo "building started"
-
-python3.9 -m pip install -r requirements.txt
-python3.9 manage.py collectstatic --noinput --clear
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+# Run Django commands
+python manage.py collectstatic --noinput
+python manage.py makemigrations
+python manage.py migrate
 
 echo "build completed"
