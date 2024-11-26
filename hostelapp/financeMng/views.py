@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from seatMng.models import seatMng
 from userMng.models import User
 from userMng.serializers import UserSerializer
-from .models import CategoryList, IncomingPayments,BillGenerate, Expense
+from .models import CategoryList, TransactionTable,BillGenerate, Expense
 from .serializers import CategoryListSerializer, IncomeSerializer, BillGenerateSerializer, ExpenseSerializer
 
 class CategoryListView(generics.ListAPIView):
@@ -12,7 +12,7 @@ class CategoryListView(generics.ListAPIView):
     serializer_class = CategoryListSerializer
 
 class IncomeCreateView(generics.CreateAPIView):
-    queryset = IncomingPayments.objects.all()
+    queryset = TransactionTable.objects.all()
     serializer_class = IncomeSerializer
     
 class GenerateBillView(APIView):

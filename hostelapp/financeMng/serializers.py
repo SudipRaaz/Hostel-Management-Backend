@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from seatMng.models import seatMng
-from .models import CategoryList, IncomingPayments, BillGenerate, Expense
+from .models import CategoryList, TransactionTable, BillGenerate, Expense
 
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,7 +10,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
 
 class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = IncomingPayments
+        model = TransactionTable
         fields = '__all__'  # Alternatively, specify fields explicitly like ['incomeID', 'incomeTitle', 'amount', 'categoryID', 'date']
         
 

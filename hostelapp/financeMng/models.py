@@ -25,17 +25,22 @@ class Expense(models.Model):
         return self.expenseTitle
 
 
-class IncomingPayments(models.Model):
-    ipaymentID = models.AutoField(primary_key=True)
+class TransactionTable(models.Model):
+    transactionType = [('INCOME', 'INCOME'),('EXPENSE', 'EXPENSE')]
+    tranxChannel = [('CASH', 'CASH'),('SIDDHARTHA BANK', 'SIDDHARTHA BANK'),('ESEWA', 'ESEWA')]
+
+    tranxID = models.AutoField(primary_key=True)
     date = models.DateField(default=datetime.date.today)
-    incomeCategory = models.CharField(max_length=50)
-    description = models.TextField(max_length=100, null=True)
+    tranxType = models.CharField(max_length=50, choices=transactionType)
     paidAmount = models.FloatField(max_length=10, default=0)
-    discountAmount = models.FloatField(max_length=10, default=0)
     dueAmount = models.FloatField(max_length=10, default=0)
+    tranxChannel = models.CharField(max_length=50, choices=tranxChannel, default="CASH" )
+    description = models.TextField(max_length=100, null=True)
     # paidUsing = models.CharField(max_length=20, null=True)
     # addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
     paidBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paidBy")
+    addedBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="addedBy")
+    
 
 class BillGenerate(models.Model):
     paymentStatus = [('Unpaid', 'Unpaid'),('Partial', 'Partial'),('Paid', 'Paid'),]
@@ -44,14 +49,11 @@ class BillGenerate(models.Model):
     seatID_finance = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Num')
     billedAmount = models.FloatField(default=0)
     billedDate = models.DateField(default=datetime.datetime.now)
-    status = models.CharField(max_length=20, choices=paymentStatus, default='Unpaid')
     billedMonth = models.CharField(max_length=50)
     billDescription = models.TextField(max_length=150, null=True)
     discountAmount = models.FloatField(null=True)
+    status = models.CharField(max_length=20, choices=paymentStatus, default='Unpaid')
     
-
-
-
 
 class Vendors(models.Model):
     name = models.CharField(max_length=50)

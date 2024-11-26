@@ -3,17 +3,10 @@
     "builds": [
         {
             "src": "hostelapp/wsgi.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "15mb",
-                "runtime": "python3.9",
-                "buildCommand": "pip install -r requirements.txt"
-            }
+            "use": "@vercel/python"
         }
-        
     ],
     "routes": [
-        
         {
             "src": "/(.*)",
             "dest": "hostelapp/wsgi.py"
