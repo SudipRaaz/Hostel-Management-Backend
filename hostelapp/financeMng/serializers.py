@@ -17,7 +17,7 @@ class IncomeSerializer(serializers.ModelSerializer):
 class BillGenerateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BillGenerate
-        fields = ['seatID_finance', 'billedAmount', 'discountAmount', 'billedMonth', 'billDescription']
+        fields = ['billID','userID','seatID_finance', 'billedAmount', 'discountAmount', 'billedDate', 'billedMonth',  'billDescription']
         # fields = '__all__'
 
     def validate(self, data):

@@ -27,7 +27,7 @@ class Expense(models.Model):
 
 class TransactionTable(models.Model):
     transactionType = [('INCOME', 'INCOME'),('EXPENSE', 'EXPENSE')]
-    tranxChannel = [('CASH', 'CASH'),('SIDDHARTHA BANK', 'SIDDHARTHA BANK'),('ESEWA', 'ESEWA')]
+    tranxChannel = [('CASH', 'CASH'),('BANK', 'BANK'),('ESEWA', 'ESEWA')]
 
     tranxID = models.AutoField(primary_key=True)
     date = models.DateField(default=datetime.date.today)
@@ -36,23 +36,22 @@ class TransactionTable(models.Model):
     dueAmount = models.FloatField(max_length=10, default=0)
     tranxChannel = models.CharField(max_length=50, choices=tranxChannel, default="CASH" )
     description = models.TextField(max_length=100, null=True)
-    # paidUsing = models.CharField(max_length=20, null=True)
-    # addedBy = models.ForeignKey(User,on_delete=models.DO_NOTHING, related_name="added_by")
+    billID = models.ForeignKey('BillGenerate', on_delete=models.DO_NOTHING, related_name="billID_Transaction")
     paidBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="paidBy")
     addedBy = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="addedBy")
-    
 
 class BillGenerate(models.Model):
     paymentStatus = [('Unpaid', 'Unpaid'),('Partial', 'Partial'),('Paid', 'Paid'),]
     billID = models.AutoField(primary_key=True)
-    userID = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_bill")
-    seatID_finance = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Num')
     billedAmount = models.FloatField(default=0)
+    discountAmount = models.FloatField(null=True)
+    totalAmount = models.FloatField()
+    paymentStatus = models.CharField(max_length=20,choices=paymentStatus, default="Unpaid")
     billedDate = models.DateField(default=datetime.datetime.now)
     billedMonth = models.CharField(max_length=50)
     billDescription = models.TextField(max_length=150, null=True)
-    discountAmount = models.FloatField(null=True)
-    status = models.CharField(max_length=20, choices=paymentStatus, default='Unpaid')
+    userID = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="user_bill")
+    seatID_finance = models.ForeignKey(seatMng,on_delete=models.PROTECT, related_name='seatID_Num')
     
 
 class Vendors(models.Model):
