@@ -6,3 +6,10 @@
 
     Instances: 
     SeatMng table: accommodating UserID instead of being seatID in user table. Such, users could be easily assigned to seats from Room Management. 
+
+2.  While performing internal API calls in user registration and seat allocation. I was not able to get the individual response to the console and only 
+    got the final response code. Which got me dubugging the for little too long and could not pin point the issue. 
+    ISSUE here was: i was sending sending seatNumber table's PK id the API but it was checking for seatNumber charfield id instead of PK id which is an
+    intentional feature of this app.
+
+    Solved: throughly studied the code as guided by GPT.

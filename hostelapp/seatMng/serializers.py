@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import seatMng, Rooms, seatNumber
 
 class SeatMngSerializer(serializers.ModelSerializer):
+    # Include related field data
+    # seatNumber = serializers.CharField(source='seatNumberPK.seatNumber', read_only=True) 
     class Meta:
         model = seatMng
         fields = ('seatID', 'priceRate', 'active', 'seatNumber', 'RoomNumber')

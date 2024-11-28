@@ -29,7 +29,7 @@ class RegisterViews(APIView):
         seat_creation = AllocateSeatToUser()
         seat_response = seat_creation.post(request)
         if seat_response.status_code != status.HTTP_201_CREATED:
-            return Response({"error": 'only seat created{seat_response.context_data}'}, status=status.HTTP_206_PARTIAL_CONTENT)
+            return Response({"error": f'{seat_response.status_code} : {seat_response.status_text}'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             # Add the seatID to the user data
             user_data['seatID'] = seat_response.data.get('seatMng', {}).get('seatID')   # type: ignore

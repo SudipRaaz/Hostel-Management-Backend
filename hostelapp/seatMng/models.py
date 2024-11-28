@@ -15,7 +15,7 @@ class Rooms(models.Model):
     
 class seatNumber(models.Model):
     seatNumberPK = models.AutoField(primary_key=True)
-    seatNumber = models.CharField( max_length=25, )
+    seatNumber = models.CharField( max_length=25)
     roomNumber = models.ForeignKey(Rooms, on_delete=models.CASCADE, related_name='seatRoomNumber')
     seatPriceRate = models.FloatField(default=0.0)
     occupiedStatus = models.BooleanField(default=False)
@@ -26,6 +26,6 @@ class seatMng(models.Model):
     priceRate = models.FloatField()
     active = models.BooleanField(default=True)
     RoomNumber = models.IntegerField()
-    seatNumberPK = models.ForeignKey(seatNumber, on_delete=models.DO_NOTHING, related_name="seatNumber_PK")
+    seatNumber = models.ForeignKey(seatNumber, on_delete=models.DO_NOTHING, related_name="seatNumber_PK")
     ## userID = models.ForeignKey(User, on_delete=models.PROTECT, related_name="assigned_user")
 

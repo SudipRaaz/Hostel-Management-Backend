@@ -17,7 +17,7 @@ class AllocateSeatToUser(APIView):
         try:
             seat_number_instance = seatNumber.objects.get(seatNumber=seat_number_value)
         except seatNumber.DoesNotExist:
-            return Response({'error': 'seatNumber does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'seatNumber does not exist'}, status=status.HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE)
 
         # Retrieve the relevant roomID using seatNumber
         room_instance = seat_number_instance.roomNumber  # This gives us the relevant Rooms instance
